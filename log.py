@@ -29,7 +29,7 @@ def startupClear():
 		imageFiles = glob.glob(os.path.join(logPath, '*.bmp'))
 		for image in imageFiles:
 			os.remove(image)
-		textFiles = glob.glob(os.path.join(logPath, '*.txt'))
+		textFiles = glob.glob(os.path.join(logPath, '[!0]*.txt'))
 		for text in textFiles:
 			os.remove(text)
 
