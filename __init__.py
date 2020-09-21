@@ -3,36 +3,28 @@
 from . import log
 from . import screen
 from . import search
-
-#third party imports
-import pytesseract
-from pytesseract import Output
+from . import tesseract_wrapper
 
 #standard library imports
 import time
 
 def init(*, tesseractPath, logFolderPath):
-	pytesseract.pytesseract.tesseract_cmd = \
-	tesseractPath
+	tesseract_wrapper.init(tesseractPath = tesseractPath)
 	log.init(logFolderPath=logFolderPath)
 
 def lookForSentence(sentence,*, lang='eng', cut=(), \
-processing=(), config='--psm 4', ratio=0.8, skip=0):
+processing=(), ratio=0.8, skip=0):
 	log.terminalMessage('Looking for Sentence')
 	logName = 'lookFor-' + sentence
 	log.start(logName)
 	log.write(logName, 'Looking for Sentence: ' + sentence)
 	image = screen.prepareImage(cut=cut, processing=processing)
 	log.write(logName, 'screeshot processed')
-	scanResult = pytesseract.image_to_data(image, lang=lang, \
-	output_type=Output.DICT, config=config)
+	words, bboxes = tesseract_wrapper.scanImage(image, lang=lang)
 	log.write(logName, 'ocr response recieved')
-	log.start('scanResult')
-	log.cleanWrite('scanResult', str(scanResult))
-	log.end('scanResult')
 	image = []
-	found, firstWord, lastWord, matchedSentence =\
-	search.searchWordList(sentence, ratio, scanResult['text'], skip=skip)
+	found, startWord, endWord, matchedSentence =\
+	search.searchWordList(sentence, ratio, words, skip=skip)
 	if found:
 		log.terminalMessage('Sentence found')
 		log.write(logName, 'Sentence found: ' + matchedSentence)
@@ -41,7 +33,7 @@ processing=(), config='--psm 4', ratio=0.8, skip=0):
 		log.terminalMessage('Sentence not found')
 		log.write(logName, 'Sentence not found')
 		log.end(logName)
-	return (found, scanResult, firstWord, lastWord)
+	return (found, bboxes, startWord, endWord)
 
 def sentenceExists(sentence, **kwargs):
 	return lookForSentence(sentence, **kwargs)[0]
@@ -56,15 +48,15 @@ def waitSentence(sentence, **kwargs):
 		
 def locateSentence(sentence, **kwargs):
 	while True:
-		found, scanResult, firstWord, lastWord =\
-		lookForSentence(sentence, **kwargs)
+		found, bboxes, startWord, endWord \
+		= lookForSentence(sentence, **kwargs)
 		if found:
-			left = min(scanResult['left'][firstWord:lastWord+1])
-			top = min(scanResult['top'][firstWord:lastWord+1])
-			width = max(scanResult['left'][firstWord:lastWord+1])\
-			- left + max(scanResult['width'][firstWord:lastWord+1])
-			height = max(scanResult['top'][firstWord:lastWord+1])\
-			- top + max(scanResult['height'][firstWord:lastWord+1])
+			left = min(bboxes['left'][startWord:endWord+1])
+			top = min(bboxes['top'][startWord:endWord+1])
+			width = max(bboxes['left'][startWord:endWord+1])\
+			- left + max(bboxes['width'][startWord:endWord+1])
+			height = max(bboxes['top'][startWord:endWord+1])\
+			- top + max(bboxes['height'][startWord:endWord+1])
 			return (left, top, width, height)
 		time.sleep(0.2)	
 
