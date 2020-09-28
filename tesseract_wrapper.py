@@ -32,7 +32,7 @@ def scanImage(image, lang='eng'):
 				log.end('scanResult')
 	if output is not None:
 		for match in finditer("<span class='ocrx_word' id='[^']+' " \
-		+ 'title="bbox (\d+) (\d+) (\d+) (\d+)">([^<]+)</span>', output):
+		+ 'title="bbox (\d+) (\d+) (\d+) (\d+)">(?:<strong>)?([^<]+)(?:</strong>)?</span>', output):
 			word = match.group(5)
 			if word == ' ':
 				continue
