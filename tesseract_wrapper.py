@@ -36,9 +36,13 @@ def scanImage(image, lang='eng'):
 			word = match.group(5)
 			if word == ' ':
 				continue
-			bboxes['left'].append(int(match.group(1)))
-			bboxes['top'].append(int(match.group(2)))
-			bboxes['width'].append(int(match.group(3)))
-			bboxes['height'].append(int(match.group(4)))
+			startx = int(match.group(1))
+			starty = int(match.group(2))
+			endx = int(match.group(3))
+			endy = int(match.group(4))
+			bboxes['left'].append(startx)
+			bboxes['top'].append(starty)
+			bboxes['width'].append(endx - startx)
+			bboxes['height'].append(endy - starty)
 			words.append(word)
 	return words, bboxes	
