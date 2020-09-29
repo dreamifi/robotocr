@@ -109,3 +109,21 @@ class Thin:
 		return morphology.thin(image, max_iter=self.iterations)
 	def name(self):
 		return 'Thin'
+		
+class Erosion:
+	def __init__(self, squareSize=4):
+		self.squareSize= squareSize
+	def process(self, image):
+		square = morphology.square(self.squareSize)
+		return morphology.erosion(image, square)
+	def name(self):
+		return 'Erosion'
+		
+class Dilation:
+	def __init__(self, squareSize=4):
+		self.squareSize= squareSize
+	def process(self, image):
+		square = morphology.square(self.squareSize)
+		return morphology.dilation(image, square)
+	def name(self):
+		return 'Dilation'
