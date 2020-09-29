@@ -4,7 +4,7 @@ from . import log
 
 #standard library imports
 from tempfile import TemporaryDirectory
-from subprocess import run
+from subprocess import run, PIPE, STDOUT
 from re import finditer
 from os import path, sep
 
@@ -12,7 +12,7 @@ def init(*, tesseractPath):
 	global _tesseractPath
 	_tesseractPath = tesseractPath
 
-def scanImage(image, lang='eng', psm=4):
+def scanImage(image, lang='eng', psm=3):
 	global _tesseractPath
 	logName = 'scanImage'
 	log.start(logName)
@@ -23,13 +23,15 @@ def scanImage(image, lang='eng', psm=4):
 	with TemporaryDirectory(prefix='robotocr_') as tempPath:
 		log.write(logName, 'temp dir created')
 		outputPath = path.join(tempPath, 'outputFile')
-		log.terminalMessage('Tesseract output target: ' + outputPath)
+		log.write(logName, 'Tesseract output target: ' + outputPath)
 		imagePath = path.join(tempPath, 'inputFile.bmp')
 		image.save(imagePath)
-		log.write(logName, 'image saved')
+		log.write(logName, 'image saved at: ' + imagePath)
 		result = run(_tesseractPath + ' ' + imagePath + ' ' \
-		+ outputPath + ' hocr -l ' + lang + ' -psm ' + str(psm))
+		+ outputPath + ' -l ' + lang  + ' -psm ' + str(psm) + ' hocr', \
+		stdout=PIPE, stderr=STDOUT, text=True)
 		log.write(logName, 'processed by tesseract')
+		log.cleanWrite(logName, result.stdout)
 		if result.returncode == 0:
 			with open(outputPath + '.html', encoding='utf-8') as outputFile:
 				output = outputFile.read()

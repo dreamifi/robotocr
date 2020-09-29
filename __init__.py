@@ -12,7 +12,7 @@ def init(*, tesseractPath, logFolderPath):
 	tesseract_wrapper.init(tesseractPath = tesseractPath)
 	log.init(logFolderPath=logFolderPath)
 
-def lookForSentence(sentence,*, lang='eng', psm=4, cut=(), \
+def lookForSentence(sentence,*, lang='eng', psm=3, cut=(), \
 processing=(), ratio=0.8, skip=0):
 	log.terminalMessage('Looking for Sentence')
 	logName = 'lookFor-' + sentence
