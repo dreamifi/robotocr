@@ -56,7 +56,7 @@ def write(logName, message):
 	global logFiles
 	global logPathExists
 	if logPathExists:
-		logFiles[logName].write(str(time.perf_counter()) + '\n' + message + '\n')
+		logFiles[logName].write(str(time.perf_counter()) + '\t' + message + '\n')
 	
 def cleanWrite(logName, message):
 	global logFiles
