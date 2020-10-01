@@ -12,7 +12,7 @@ def init(*, tesseractPath, logFolderPath):
 	tesseract_wrapper.init(tesseractPath = tesseractPath)
 	log.init(logFolderPath=logFolderPath)
 
-def lookForSentence(sentence,*, lang='eng', psm=3, cut=(), \
+def lookForSentence(sentence,*, lang='eng', cut=(), \
 processing=(), ratio=0.8, skip=0):
 	log.terminalMessage('Looking for Sentence')
 	logName = 'lookFor-' + sentence
@@ -20,7 +20,7 @@ processing=(), ratio=0.8, skip=0):
 	log.write(logName, 'Looking for Sentence: ' + sentence)
 	image = screen.prepareImage(cut=cut, processing=processing)
 	log.write(logName, 'screeshot processed')
-	words, bboxes = tesseract_wrapper.scanImage(image, lang=lang, psm=psm)
+	words, bboxes = tesseract_wrapper.scanImage(image, lang=lang)
 	log.write(logName, 'ocr response recieved')
 	image = []
 	found, startWord, endWord, matchedSentence =\
